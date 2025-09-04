@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>去水印下载工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #000000 0%, #1d1d1f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 48px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            font-size: 56px;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            line-height: 1.07143;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #86868b;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 1.381;
+            letter-spacing: 0.011em;
+            margin-bottom: 40px;
+        }
+
+        .auth-section {
+            margin-bottom: 32px;
+        }
+
+        .main-section {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: #1d1d1f;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.022em;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 17px;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            letter-spacing: -0.022em;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.16);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 17px 32px;
+            border-radius: 980px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 400;
+            font-family: inherit;
+            letter-spacing: -0.022em;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 100%;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: #0056d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            transition: transform 0.1s;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background: #007aff;
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 32px;
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .video-info {
+            margin-bottom: 24px;
+        }
+
+        .video-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            line-height: 1.33337;
+            letter-spacing: -0.009em;
+        }
+
+        .preview-section {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .cover-preview {
+            flex: 0 0 200px;
+        }
+
+        .cover-preview img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-buttons {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .download-btn {
+            background: #34c759;
+            margin-bottom: 12px;
+        }
+
+        .download-btn:hover {
+            background: #30b64d;
+            box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
+        }
+
+        .error {
+            color: #ff3b30;
+            background: rgba(255, 59, 48, 0.1);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            font-size: 17px;
+            letter-spacing: -0.022em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 32px;
+        }
+
+        .spinner {
+            border: 2px solid rgba(0, 122, 255, 0.2);
+            border-top: 2px solid #007aff;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        .loading-text {
+            color: #86868b;
+            font-size: 17px;
+            letter-spacing: -0.022em;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1068px) {
+            .container {
+                padding: 32px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .subtitle {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 734px) {
+            .container {
+                padding: 24px;
+                margin: 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 17px;
+            }
+
+            .preview-section {
+                flex-direction: column;
+            }
+
+            .cover-preview {
+                flex: none;
+                align-self: center;
+                max-width: 200px;
+            }
+
+            .download-buttons {
+                min-width: auto;
+            }
+        }
+
+        .feature-highlight {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #007aff;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: -0.016em;
+        }
+
+        .feature-highlight::before {
+            content: '✨';
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="container">
+            <h1>去水印下载</h1>
+            <p class="subtitle">简单快捷，无损下载视频内容</p>
+            
+            <!-- 密码验证区域 -->
+            <div class="auth-section" id="authSection">
+                <div class="feature-highlight">
+                    安全验证保护
+                </div>
+                <div class="input-group">
+                    <label for="password">请输入访问密码</label>
+                    <input type="password" id="password" placeholder="输入密码以继续">
+                </div>
+                <button class="btn" onclick="authenticate()">验证并进入</button>
+                <div id="authError" class="error" style="display: none;"></div>
+            </div>
+
+            <!-- 主功能区域 -->
+            <div class="main-section" id="mainSection">
+                <div class="feature-highlight">
+                    支持抖音等主流平台
+                </div>
+                <div class="input-group">
+                    <label for="linkInput">粘贴分享链接</label>
+                    <textarea id="linkInput" placeholder="粘贴包含链接的分享内容，系统将自动提取下载地址
+
+例如：4.89 03/24 cNJ:/ K@W.md 随意"搭讪"韩国美女，印度富人区的三哥能有多自信？ # 外国人 # 歪果仁真会玩 # 印度 # 旅行 # 看世界  https://v.douyin.com/ZOqdo9qsYuY/ 复制此链接，打开Dou音搜索，直接观看视频！"></textarea>
+                </div>
+                <button class="btn" onclick="parseVideo()" id="parseBtn">开始解析</button>
+                
+                <div id="loadingSection" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="loading-text">正在解析中，请稍候...</p>
+                </div>
+
+                <div id="errorSection" class="error" style="display: none;"></div>
+
+                <!-- 解析结果区域 -->
+                <div class="result-section" id="resultSection">
+                    <div class="video-info">
+                        <div class="video-title" id="videoTitle"></div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="cover-preview">
+                            <img id="coverImage" src="" alt="视频封面">
+                        </div>
+                        <div class="download-buttons">
+                            <button class="btn download-btn" onclick="downloadVideo()" id="downloadVideoBtn">
+                                下载视频
+                            </button>
+                            <button class="btn download-btn" onclick="downloadCover()" id="downloadCoverBtn">
+                                下载封面
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentVideoData = null;
+
+        function authenticate() {
+            const password = document.getElementById('password').value;
+            const authError = document.getElementById('authError');
+            
+            if (password === '123456') {
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('mainSection').style.display = 'block';
+                authError.style.display = 'none';
+            } else {
+                authError.textContent = '密码错误，请重新输入';
+                authError.style.display = 'block';
+            }
+        }
+
+        function extractUrl(text) {
+            const urlRegex = /https?:\/\/[^\s]+/g;
+            const matches = text.match(urlRegex);
+            return matches ? matches[0] : null;
+        }
+
+        async function parseVideo() {
+            const linkInput = document.getElementById('linkInput').value.trim();
+            const parseBtn = document.getElementById('parseBtn');
+            const loadingSection = document.getElementById('loadingSection');
+            const errorSection = document.getElementById('errorSection');
+            const resultSection = document.getElementById('resultSection');
+
+            if (!linkInput) {
+                showError('请输入分享链接');
+                return;
+            }
+
+            const extractedUrl = extractUrl(linkInput);
+            if (!extractedUrl) {
+                showError('未找到有效的链接，请检查输入内容');
+                return;
+            }
+
+            parseBtn.disabled = true;
+            loadingSection.style.display = 'block';
+            errorSection.style.display = 'none';
+            resultSection.style.display = 'none';
+
+            try {
+                const apiUrl = `https://api.guijianpan.com/waterRemoveDetail/xxmQsyByAk?ak=14dc432b829a4196831e2997e9767553&link=${encodeURIComponent(extractedUrl)}`;
+                
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.code === '10000' && data.content && data.content.success) {
+                    currentVideoData = data.content;
+                    displayResult(data.content);
+                } else {
+                    showError(data.msg || '解析失败，请检查链接是否正确');
+                }
+            } catch (error) {
+                showError('网络请求失败，请稍后重试');
+                console.error('API请求错误:', error);
+            } finally {
+                parseBtn.disabled = false;
+                loadingSection.style.display = 'none';
+            }
+        }
+
+        function displayResult(content) {
+            const videoTitle = document.getElementById('videoTitle');
+            const coverImage = document.getElementById('coverImage');
+            const resultSection = document.getElementById('resultSection');
+
+            videoTitle.textContent = content.title || '无标题';
+            coverImage.src = content.cover;
+            coverImage.onerror = function() {
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMDAgODBMMTIwIDEwMEgxMTBWMTMwSDkwVjEwMEg4MEwxMDAgODBaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNDQ0NDQ0MiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuWbvuWDj+WKoOi9veWksei0pTwvdGV4dD4KICA8L3N2Zz4=';
+            };
+
+            resultSection.style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            errorSection.textContent = message;
+            errorSection.style.display = 'block';
+        }
+
+        async function downloadFile(url, filename) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = downloadUrl;
+                a.download = filename;
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(downloadUrl);
+                document.body.removeChild(a);
+            } catch (error) {
+                showError('下载失败，请稍后重试');
+                console.error('下载错误:', error);
+            }
+        }
+
+        function downloadVideo() {
+            if (!currentVideoData || !currentVideoData.url) {
+                showError('视频链接不可用');
+                return;
+            }
+            
+            const filename = `${currentVideoData.title || 'video'}.mp4`;
+            downloadFile(currentVideoData.url, filename);
+        }
+
+        function downloadCover() {
+            if (!currentVideoData || !currentVideoData.cover) {
+                showError('封面链接不可用');
+                return;
+            }
+            
+            const filename = `${currentVideoData.title || 'cover'}_cover.webp`;
+            downloadFile(currentVideoData.cover, filename);
+        }
+
+        // 回车键快捷操作
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                authenticate();
+            }
+        });
+
+        document.getElementById('linkInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                parseVideo();
+            }
+        });
+    </script>
+</body>
+</html>
